@@ -1,0 +1,10 @@
+{
+    "name": "<%= _.slugify(appname) %>",
+    "version": "0.1.0",
+    "dependencies": {},
+    "devDependencies": {
+        "jquery": "~2.1.1",
+        "bootstrap-sass": "~3.0.2"
+    }
+}
+
