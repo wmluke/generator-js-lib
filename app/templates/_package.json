@@ -1,6 +1,10 @@
 {
     "name": "<%= _.slugify(appname) %>",
     "version": "0.1.0",
+    "scripts": {
+        "test": "gulp test",
+        "coveralls": "cat ./reports/coverage/*/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    },
     "dependencies": {},
     "devDependencies": {
         "underscore.string": "~2.3.1",
@@ -12,6 +16,7 @@
         "gulp": "^3.6.0",
         "gulp-autoprefixer": "^0.0.6",
         "gulp-bower-files": "^0.2.1",
+        "gulp-bump": "^0.1.8",
         "gulp-cache": "^0.1.1",
         "gulp-clean": "^0.2.4",
         "gulp-concat": "^2.2.0",

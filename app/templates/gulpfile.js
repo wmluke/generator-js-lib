@@ -24,16 +24,22 @@ var files = {
         ]
     },
     test: {
-        spec: [
-            'test/spec/*-spec.js',
-            'test/spec/**/*-spec.js'
+        specs: [
+            'test/specs/*-spec.js',
+            'test/specs/**/*-spec.js'
         ]
     },
     app: {
         watch: [
+            'test/app/*.html',
+            'test/app/views/*.html',
+            'test/app/views/**/*.html',
             'test/app/scripts/*.js',
             'test/app/scripts/**/*.js',
-            'test/.tmp/styles/*.css'
+            'test/app/styles/*.css',
+            'test/app/styles/**/*.css',
+            'test/.tmp/styles/*.css',
+            'test/.tmp/styles/**/*.css'
         ],
         sass: [
             'test/app/styles/**/*.scss'
@@ -43,8 +49,8 @@ var files = {
 
 var banner = [
     '/**! ',
-    ' * @license <%= pkg.name %> v<%= pkg.version %>',
-    ' * Copyright (c) 2013 <%= pkg.author.name %>. <%= pkg.homepage %>',
+    ' * @license <%%= pkg.name %> v<%%= pkg.version %>',
+    ' * Copyright (c) 2013 <%%= pkg.author %>. <%%= pkg.homepage %>',
     ' * License: MIT',
     ' */\n'
 ].join('\n');
@@ -53,7 +59,7 @@ var banner = [
 gulp.task('test', function () {
     karma.start({
         configFile: path.resolve('karma.conf.js'),
-        files: files.test.spec,
+        browsers: ['PhantomJS'],
         singleRun: true
     }, function (exitCode) {
         gutil.log('Karma has exited with ' + exitCode);
@@ -64,7 +70,6 @@ gulp.task('test', function () {
 gulp.task('test-debug', function () {
     karma.start({
         configFile: path.resolve('karma.conf.js'),
-        files: files.test.spec,
         singleRun: false
     }, function (exitCode) {
         gutil.log('Karma has exited with ' + exitCode);
@@ -91,23 +96,26 @@ gulp.task('scripts', function () {
         .pipe($.header(banner, { pkg: pkg }))
         .pipe($.concat(pkg.name + '.js'))
         .pipe(gulp.dest(folders.dist))
-        .pipe($.uglify())
+        .pipe($.uglify({ preserveComments: 'some' }))
         .pipe($.rename(pkg.name + '.min.js'))
         .pipe(gulp.dest(folders.dist))
         .pipe($.size());
 });
 
+gulp.task('bump', function () {
+    gulp.src(['./bower.json', ['./package.json']])
+        .pipe($.bump({ indent: 4 }))
+        .pipe(gulp.dest('./'));
+});
 
 gulp.task('clean', function () {
     return gulp.src([folders.tmp, folders.dist], { read: false })
         .pipe($.clean());
 });
 
-gulp.task('build', ['scripts']);
+gulp.task('build', ['clean', 'test', 'scripts']);
 
-gulp.task('default', ['clean'], function () {
-    gulp.start('build');
-});
+gulp.task('default', ['build']);
 
 gulp.task('connect', function () {
     var connect = require('connect');

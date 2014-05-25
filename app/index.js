@@ -24,62 +24,26 @@ var JsLibGenerator = yeoman.generators.Base.extend({
         // welcome message
         if (!this.options['skip-welcome-message']) {
             this.log(yosay());
-            this.log(chalk.magenta('Out of the box I include HTML5 Boilerplate, jQuery, and a gulpfile.js to build your app.'));
+            this.log(chalk.magenta('Throwing up js lib scaffold...'));
         }
 
-        var prompts = [
-            {
-                type: 'checkbox',
-                name: 'features',
-                message: 'What more would you like?',
-                choices: [
-                    {
-                        name: 'Sass',
-                        value: 'includeSass',
-                        checked: true
-                    },
-                    {
-                        name: 'Bootstrap',
-                        value: 'includeBootstrap',
-                        checked: true
-                    },
-                    {
-                        name: 'Modernizr',
-                        value: 'includeModernizr',
-                        checked: true
-                    }
-                ]
-            }
-        ];
+        var prompts = [];
 
         this.prompt(prompts, function (answers) {
-            var features = answers.features;
-
-            var hasFeature = function (feat) {
-                return features.indexOf(feat) !== -1;
-            };
-
-            // manually deal with the response, get back and store the results.
-            // we change a bit this way of doing to automatically do this in the self.prompt() method.
-            this.includeSass = hasFeature('includeSass');
-            this.includeBootstrap = hasFeature('includeBootstrap');
-            this.includeModernizr = hasFeature('includeModernizr');
-
             cb();
         }.bind(this));
     },
 
     srcFiles: function () {
         this.mkdir('dist');
-        this.mkdir('src');
         this.copy('src/scripts/_project-lib.js', 'src/scripts/' + _str.slugify(this.appname) + '.js');
+        this.copy('src/jshintrc', 'src/.jshintrc');
     },
 
     testFiles: function () {
-        this.mkdir('test');
-        this.mkdir('test/specs');
-        this.mkdir('test/e2e');
-
+        this.copy('karma.conf.js', 'karma.conf.js')
+        this.template('test/specs/_project-lib-spec.js', 'test/specs/' + _str.slugify(this.appname) + '-spec.js');
+        this.copy('test/specs/jshintrc', 'test/specs/.jshintrc');
         this.copy('app/styles/main.scss', 'test/app/styles/main.scss');
         this.copy('app/scripts/app.js', 'test/app/scripts/app.js');
         this.template('app/_index.html', 'test/app/index.html');
@@ -88,10 +52,13 @@ var JsLibGenerator = yeoman.generators.Base.extend({
     projectFiles: function () {
         this.template('_package.json', 'package.json');
         this.template('_bower.json', 'bower.json');
-        this.copy('_gulpfile.js', 'gulpfile.js');
+        this.copy('gulpfile.js', 'gulpfile.js');
         this.copy('editorconfig', '.editorconfig');
         this.copy('jshintrc', '.jshintrc');
         this.copy('bowerrc', '.bowerrc');
+        this.copy('gitignore', '.gitignore');
+        this.copy('travis.yml', '.travis.yml');
+        this.copy('Makefile', 'Makefile');
     }
 });
 
